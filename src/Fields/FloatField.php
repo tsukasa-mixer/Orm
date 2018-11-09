@@ -20,6 +20,6 @@ class FloatField extends Field
 
     public function getValue()
     {
-        return floatval(parent::getValue());
+        return (float)parent::getValue();
     }
 }

@@ -1,9 +1,11 @@
 <?php
 namespace Tsukasa\Orm;
 
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Connection;
 use Exception;
 use ArrayAccess;
+use Serializable;
 
 
 use Tsukasa\Orm\Fields\AutoField;
@@ -12,7 +14,7 @@ use Tsukasa\Orm\Fields\FileField;
 use Tsukasa\Orm\Fields\HasManyField;
 use Tsukasa\Orm\Fields\ManyToManyField;
 use Tsukasa\Orm\Fields\ModelFieldInterface;
-use Serializable;
+use Tsukasa\TableMetaData\Orm\MetaData;
 
 /**
  * Class NewBase
@@ -69,7 +71,9 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function convertToPrimaryKeyName($name)
     {
-        return $name == 'pk' ? $this->getPrimaryKeyName() : $name;
+        return $name == 'pk'
+            ? $this->getPrimaryKeyName()
+            : $name;
     }
 
     /**
@@ -96,7 +100,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
                 return $this->$method($value);
             }
 
-            throw new Exception("Setting unknown property " . get_class($this) . "::" . $name);
+            throw new \RuntimeException('Setting unknown property ' . get_class($this) . "::" . $name);
         }
     }
 
@@ -158,7 +162,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * @param string $name
      * @return bool
      */
-    public function hasField($name): bool
+    public function hasField($name)
     {
         $name = $this->convertToPrimaryKeyName($name);
         return self::getMeta()->hasField($name);
@@ -167,7 +171,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     /**
      * @return array
      */
-    public function getDirtyAttributes(): array
+    public function getDirtyAttributes()
     {
         return $this->attributes->getDirtyAttributes();
     }
@@ -181,18 +185,19 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     public function getField($name, $throw = false)
     {
         $name = $this->convertToPrimaryKeyName($name);
-        if (self::getMeta()->hasField($name) === false) {
 
-            if ($throw) {
-                throw new \RuntimeException('Unknown field');
-            }
+        if (self::getMeta()->hasField($name)) {
+            $field = self::getMeta()->getField($name);
+            $field->setModel($this);
 
-            return null;
+            return $field;
         }
 
-        $field = self::getMeta()->getField($name);
-        $field->setModel($this);
-        return $field;
+        if ($throw) {
+            throw new \RuntimeException('Unknown field');
+        }
+
+        return null;
     }
 
     public function getFieldsInit()
@@ -281,7 +286,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function getPrimaryKeyValues()
     {
-        $keys = $this->getPrimaryKeyName(true);
+        $keys = self::getPrimaryKeyName(true);
         $values = [];
         foreach ($keys as $name) {
             $values[$name] = $this->attributes->getAttribute($name);
@@ -301,7 +306,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     /**
      * @return array
      */
-    public function getAttributes() : array
+    public function getAttributes()
     {
         $attributes = [];
         foreach (self::getMeta()->getAttributes() as $name) {
@@ -313,7 +318,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     /**
      * @return array
      */
-    public function getOldAttributes(): array
+    public function getOldAttributes()
     {
         return $this->attributes->getOldAttributes();
     }
@@ -322,7 +327,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * @param $name
      * @return bool
      */
-    public function hasAttribute($name): bool
+    public function hasAttribute($name)
     {
         return \in_array($name, self::getMeta()->getAttributes(), true);
     }
@@ -343,11 +348,11 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * Returns the bundle's container extension class.
      *
      * @return string
+     * @throws \ReflectionException
      */
-    protected static function getManagerClass(): string
+    protected static function getManagerClass()
     {
-        $reflect = new \ReflectionClass(static::class);
-        return self::getNamespace() . '\\' . $reflect->getShortName() . 'Manager';
+        return self::getNamespace() . '\\' . self::classNameShort(). 'Manager';
     }
 
     /**
@@ -355,7 +360,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      *
      * @return string The Bundle namespace
      */
-    public static function getNamespace(): string
+    public static function getNamespace()
     {
         $class = static::class;
         return substr($class, 0, strrpos($class, '\\'));
@@ -392,13 +397,13 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
             return \call_user_func_array([$this, $manager], array_merge([$this], $args));
 
         }
-        elseif (method_exists($this, $method)) {
+
+        if (method_exists($this, $method)) {
             return \call_user_func_array([$this, $method], $args);
 
         }
-        else {
-            throw new Exception('Call unknown method ' . $method);
-        }
+
+        throw new \RuntimeException('Call unknown method ' . $method);
     }
 
     /**
@@ -406,7 +411,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * @param string $tablePrefix
      * @return string
      */
-    public static function getRawTableName($name, $tablePrefix = ''): ?string
+    public static function getRawTableName($name, $tablePrefix = '')
     {
         if (strpos($name, '{{') !== false) {
             $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
@@ -432,17 +437,18 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
             return self::getRawTableName($tableName);
 
         }
-        else if (method_exists($className, $manager)) {
+
+        if (method_exists($className, $manager)) {
             return \call_user_func_array([$className, $manager], $args);
 
         }
-        else if (method_exists($className, $method)) {
+
+        if (method_exists($className, $method)) {
             return \call_user_func_array([$className, $method], $args);
 
         }
-        else {
-            throw new Exception("Call unknown method {$method}");
-        }
+
+        throw new \RuntimeException("Call unknown method {$method}");
     }
 
     /**
@@ -475,13 +481,14 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
             }
 
             $field->setValue($this->getAttribute($field->getAttributeName()));
+
             if ($field->isValid() === false) {
                 $errors[$name] = $field->getErrors();
             }
         }
 
         $this->setErrors($errors);
-        return \count($errors) == 0;
+        return \count($errors) === 0;
     }
 
     /**
@@ -494,7 +501,9 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
         if ($this->hasAttribute($name)) {
             return $this->attributes->getAttribute($name);
-        } else if (isset($this->related[$name])) {
+        }
+
+        if (isset($this->related[$name])) {
             return $this->related[$name];
         }
         return null;
@@ -583,9 +592,9 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     {
         if ($this->getIsNewRecord()) {
             return $this->insert($fields);
-        } else {
-            return $this->update($fields);
         }
+
+        return $this->update($fields);
     }
 
     protected function beforeDeleteInternal()
@@ -637,10 +646,11 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     /**
      * @return MetaData
+     * @throws \ReflectionException
      */
     public static function getMeta()
     {
-        return MetaData::getInstance(get_called_class());
+        return MetaData::getInstance(static::class);
     }
 
     /**
@@ -702,39 +712,43 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     protected function getFieldValue($name)
     {
-        $field = $this->getField($name);
+        if ($field = $this->getField($name)) {
+            if ($field->getSqlType()) {
+                $platform = $this->getConnection()->getDatabasePlatform();
 
-        if ($field->getSqlType()) {
-            $platform = $this->getConnection()->getDatabasePlatform();
+                $attributeValue = $this->getAttribute($field->getAttributeName());
 
-            $attributeValue = $this->getAttribute($field->getAttributeName());
+                if ($name == $field->getAttributeName()) {
+                    return $field->convertToPHPValueSQL($attributeValue, $platform);
+                }
 
-            if ($name == $field->getAttributeName()) {
-                return $field->convertToPHPValueSQL($attributeValue, $platform);
-            }
-            else {
                 return $field->convertToPHPValue($attributeValue, $platform);
             }
-        }
-        else {
+
             return $field->getValue();
         }
+
+        return null;
     }
 
     /**
      * @return string
+     * @alias
      */
     public static function classNameShort()
     {
-        return (new \ReflectionClass(get_called_class()))->getShortName();
+        $name = explode('\\', static::class);
+        end($name);
+        return current($name);
     }
 
     /**
      * @return string
+     * @deprecated
      */
     public static function getShortName()
     {
-        return (new \ReflectionClass(get_called_class()))->getShortName();
+        return self::classNameShort();
     }
 
     /**
@@ -742,7 +756,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public static function tableName()
     {
-        $shortName = (new \ReflectionClass(get_called_class()))->getShortName();
+        $shortName = self::classNameShort();
         $shortName = str_replace('Model', '', $shortName);
         return self::normalizeTableName($shortName);
     }
@@ -753,7 +767,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public static function normalizeTableName($tableName)
     {
-        return trim(strtolower(preg_replace('/(?<![A-Z])[A-Z]/', '_\0', $tableName)), '_');
+        return Inflector::tableize($tableName);
     }
 
     /**
@@ -788,6 +802,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     /**
      * @param mixed $offset
+     * @throws Exception
      */
     public function offsetUnset($offset)
     {
@@ -795,7 +810,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     }
 
     /**
-     * @param string|null $connection Connection name from config
+     * @param string|null $name Connection name from config
      * @return $this
      */
     public function using($name = null)
@@ -810,7 +825,8 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function getConnection()
     {
-        return Xcart::app()->db->getConnection($this->using);
+        return ConnectionManager::getInstance()
+            ->getConnection($this->using);
     }
 
     /**

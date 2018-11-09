@@ -5,6 +5,7 @@ namespace Tsukasa\Orm\Fields;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\Orm\Manager;
 
 /**
  * Class RelatedField
@@ -136,5 +137,8 @@ abstract class RelatedField extends IntField
         return $name;
     }
 
+    /**
+     * @return Manager
+     */
     abstract public function getManager();
 }

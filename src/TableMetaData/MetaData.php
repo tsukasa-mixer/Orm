@@ -1,6 +1,6 @@
 <?php
 
-namespace Tsukasa\Orm;
+namespace Tsukasa\TableMetaData\Orm;
 
 use Tsukasa\Orm\Fields\AutoField;
 use Tsukasa\Orm\Fields\Field;
@@ -18,11 +18,10 @@ use ReflectionClass;
  */
 class MetaData
 {
-
     /**
      * Default pk name
      */
-    public const DEFAULT_PRIMARY_KEY_NAME = 'id';
+    const DEFAULT_PRIMARY_KEY_NAME = 'id';
 
     /**
      * @var MetaData[]
@@ -48,6 +47,7 @@ class MetaData
     /**
      * MetaData constructor.
      * @param string $className
+     * @throws \ReflectionException
      */
     final private function __construct($className)
     {
@@ -57,8 +57,9 @@ class MetaData
     /**
      * @param $config
      * @return ModelFieldInterface
+     * @throws \ReflectionException
      */
-    protected function createField($config): ModelFieldInterface
+    protected function createField($config)
     {
         /** @var $field ModelFieldInterface */
         if (\is_string($config)) {
@@ -79,6 +80,7 @@ class MetaData
 
     /**
      * @param string $className
+     * @throws \ReflectionException
      */
     protected function init($className)
     {
@@ -88,7 +90,7 @@ class MetaData
 
             /** @var Field $field */
             $field = $this->createField($config);
-            $field->setName((!empty($config['name'])) ? $config['name'] : $name);
+            $field->setName(!empty($config['name']) ? $config['name'] : $name);
             $field->setModelClass($className);
 
             $this->fields[$name] = $field;
@@ -130,7 +132,7 @@ class MetaData
     /**
      * @return array|[]ModelFieldInterface
      */
-    public function getOneToOneFields(): array
+    public function getOneToOneFields()
     {
         return $this->fetchFields(OneToOneField::class);
     }
@@ -138,7 +140,7 @@ class MetaData
     /**
      * @return array|[]ModelFieldInterface
      */
-    public function getHasManyFields(): array
+    public function getHasManyFields()
     {
         return $this->fetchFields(HasManyField::class);
     }
@@ -146,7 +148,7 @@ class MetaData
     /**
      * @return array|[]ModelFieldInterface
      */
-    public function getManyToManyFields(): array
+    public function getManyToManyFields()
     {
         return $this->fetchFields(ManyToManyField::class);
     }
@@ -154,7 +156,7 @@ class MetaData
     /**
      * @return array|[]ModelFieldInterface
      */
-    public function getForeignFields(): array
+    public function getForeignFields()
     {
         return $this->fetchFields(ForeignField::class);
     }
@@ -179,18 +181,20 @@ class MetaData
 
     /**
      * @param $name
-     * @return bool
+     * @return RelatedField|null
      */
-    public function getRelatedField($name):? bool
+    public function getRelatedField($name)
     {
         $field = $this->getField($name);
-        return $field instanceof RelatedField ? $field : null;
+        return $field instanceof RelatedField
+            ? $field
+            : null;
     }
 
     /**
      * @return array|[]ModelFieldInterface
      */
-    public function getRelatedFields(): array
+    public function getRelatedFields()
     {
         return $this->fetchFields(RelatedField::class);
     }
@@ -199,7 +203,7 @@ class MetaData
      * @param $name
      * @return bool
      */
-    public function hasHasManyField($name): bool
+    public function hasHasManyField($name)
     {
         return array_key_exists($name, $this->getHasManyFields());
     }
@@ -208,7 +212,7 @@ class MetaData
      * @param $name
      * @return bool
      */
-    public function hasManyToManyField($name): bool
+    public function hasManyToManyField($name)
     {
         return array_key_exists($name, $this->getManyToManyFields());
     }
@@ -217,7 +221,7 @@ class MetaData
      * @param $name
      * @return bool
      */
-    public function hasOneToOneField($name): bool
+    public function hasOneToOneField($name)
     {
         return array_key_exists($name, $this->getOneToOneFields());
     }
@@ -225,8 +229,9 @@ class MetaData
     /**
      * @param $className
      * @return MetaData
+     * @throws \ReflectionException
      */
-    public static function getInstance($className): MetaData
+    public static function getInstance($className)
     {
         if (!isset(self::$instances[$className])) {
             self::$instances[$className] = new static($className);
@@ -237,7 +242,7 @@ class MetaData
     /**
      * @return array
      */
-    public function getAttributes(): array
+    public function getAttributes()
     {
         if ($this->attributes === null) {
             /** @var \Tsukasa\Orm\Model $className */
@@ -256,7 +261,7 @@ class MetaData
     /**
      * @return array|\Tsukasa\Orm\Fields\ModelFieldInterface[]
      */
-    public function getFields(): array
+    public function getFields()
     {
         return $this->fields;
     }
@@ -267,14 +272,16 @@ class MetaData
      */
     public function getMappingName($name)
     {
-        return $this->mapping[$name] ?? $name;
+        return isset($this->mapping[$name]) ?
+            $this->mapping[$name]
+            : $name;
     }
 
     /**
      * @param $name
      * @return Field
      */
-    public function getField($name):? Field
+    public function getField($name)
     {
         if ($name === 'pk') {
             $name = $this->getPrimaryKeyName();
@@ -285,6 +292,7 @@ class MetaData
         if (isset($this->fields[$name])) {
             $field = $this->fields[$name];
             $field->cleanValue();
+
             return $field;
         }
 
@@ -295,7 +303,7 @@ class MetaData
      * @param $name
      * @return bool
      */
-    public function hasField($name): bool
+    public function hasField($name)
     {
         if ($name === 'pk') {
             $name = $this->getPrimaryKeyName();
@@ -307,7 +315,7 @@ class MetaData
      * @param $name
      * @return bool
      */
-    public function hasForeignField($name): bool
+    public function hasForeignField($name)
     {
         return $this->getField($name) instanceof ForeignField;
     }
@@ -316,7 +324,7 @@ class MetaData
      * @param $name
      * @return ModelFieldInterface|null
      */
-    public function getForeignField($name):? ModelFieldInterface
+    public function getForeignField($name)
     {
         $field = $this->getField($name);
         return $field instanceof ForeignField ? $field : null;
@@ -326,7 +334,7 @@ class MetaData
      * @param $name
      * @return ModelFieldInterface|null
      */
-    public function getOneToOneField($name):? ModelFieldInterface
+    public function getOneToOneField($name)
     {
         $field = $this->getField($name);
         return $field instanceof OneToOneField ? $field : null;
@@ -336,7 +344,7 @@ class MetaData
      * @param $name
      * @return mixed|null
      */
-    public function getManyToManyField($name):? ManyToManyField
+    public function getManyToManyField($name)
     {
         $field = $this->getField($name);
         return $field instanceof ManyToManyField ? $field : null;
@@ -346,7 +354,7 @@ class MetaData
      * @param $name
      * @return mixed|null
      */
-    public function getHasManyField($name):? HasManyField
+    public function getHasManyField($name)
     {
         $field = $this->getField($name);
         return $field instanceof HasManyField ? $field : null;
@@ -356,7 +364,7 @@ class MetaData
      * @param $keys
      * @return bool
      */
-    public function isPrimaryKey($keys): bool
+    public function isPrimaryKey($keys)
     {
         $keys = (array)$keys;
         $pks = $this->getPrimaryKeyName(true);

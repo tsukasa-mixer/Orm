@@ -51,7 +51,7 @@ class QuerySet extends QuerySetBase
             $rows = $this->_data;
         }
         else {
-            $sql = $this->sql ?? $this->allSql();
+            $sql = !empty($this->sql) ? $this->sql : $this->allSql();
 
             $rows = $this->execute($sql);
         }
@@ -283,7 +283,6 @@ class QuerySet extends QuerySetBase
      * @param array $filter
      *
      * @return null|\Tsukasa\Orm\ModelInterface
-     * @throws \Doctrine\DBAL\DBALException
      * @throws \Exception
      * @throws \Tsukasa\Orm\Exception\MultipleObjectsReturned
      */
@@ -294,7 +293,8 @@ class QuerySet extends QuerySetBase
         if (count($rows) > 1) {
             throw new MultipleObjectsReturned();
         }
-        elseif (count($rows) === 0) {
+
+        if (count($rows) === 0) {
             return null;
         }
 
@@ -305,11 +305,11 @@ class QuerySet extends QuerySetBase
         if ($this->asArray) {
             return $row;
         }
-        else {
-            $model = $this->createModel($row);
-            $model->setIsNewRecord(false);
-            return $model;
-        }
+
+        $model = $this->createModel($row);
+        $model->setIsNewRecord(false);
+
+        return $model;
     }
 
     public function setSql($sql)
@@ -361,14 +361,15 @@ class QuerySet extends QuerySetBase
                 if ($value instanceof Model) {
                     return $value->pk;
                 }
-                else if ($value instanceof Manager || $value instanceof QuerySet) {
+
+                if ($value instanceof Manager || $value instanceof QuerySet) {
                     return $value->getQueryBuilder();
                 }
                 return $value;
             }, $query);
-        } else {
-            return $query;
         }
+
+        return $query;
     }
 
     /**

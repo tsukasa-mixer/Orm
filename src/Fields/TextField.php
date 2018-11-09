@@ -14,6 +14,7 @@ class TextField extends Field
 
     /**
      * @return string
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getSqlType()
     {

@@ -6,14 +6,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class SerializeField extends TextField
 {
 
-    public function convertToPHPValueSQL($value, AbstractPlatform $platform)
-    {
-        if (is_string($value)) {
-            return unserialize($value);
-        }
-
-        return parent::convertToPHPValueSQL($value, $platform);
-    }
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if (is_string($value)) {

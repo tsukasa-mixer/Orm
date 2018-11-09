@@ -27,27 +27,27 @@ abstract class TreeModel extends Model
     {
         return [
             'parent' => [
-                'class' => TreeForeignField::className(),
-                'modelClass' => get_called_class(),
+                'class' => TreeForeignField::class,
+                'modelClass' => static::class,
                 'null' => true,
             ],
             'lft' => [
-                'class' => IntField::className(),
+                'class' => IntField::class,
                 'editable' => false,
                 'null' => true,
             ],
             'rgt' => [
-                'class' => IntField::className(),
+                'class' => IntField::class,
                 'editable' => false,
                 'null' => true,
             ],
             'level' => [
-                'class' => IntField::className(),
+                'class' => IntField::class,
                 'editable' => false,
                 'null' => true,
             ],
             'root' => [
-                'class' => IntField::className(),
+                'class' => IntField::class,
                 'editable' => false,
                 'null' => true,
             ],
@@ -62,7 +62,7 @@ abstract class TreeModel extends Model
     public static function objectsManager($instance = null)
     {
         if (!$instance) {
-            $className = get_called_class();
+            $className = static::class;
             $instance = new $className();
         }
 
@@ -135,14 +135,14 @@ abstract class TreeModel extends Model
         $pid_name = $this->getField('parent')->getAttributeName();
         $changed_values = $this->getChangedAttributes($fields);
 
-        if (in_array($pid_name, array_keys($changed_values))) {
+        if (array_key_exists($pid_name, $changed_values)) {
 
             if ($saved = parent::save($fields))
             {
                 if ($this->parent) {
                     $this->moveAsLast($this->parent);
                 }
-                elseif ($this->isRoot() == false) {
+                elseif ($this->isRoot() === false) {
                     $this->moveAsRoot();
                 }
 
@@ -172,7 +172,8 @@ abstract class TreeModel extends Model
 
             return parent::save($fields);
         }
-        elseif ($this->parent->lft) {
+
+        if ($this->parent->lft) {
             $target = $this->parent;
             $key = $target->rgt;
 
@@ -230,6 +231,7 @@ abstract class TreeModel extends Model
      * @param TreeModel $target the target
      *
      * @return self whether the prepending succeeds
+     * @throws Exception
      */
     public function prepend(TreeModel $target)
     {

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: max
- * Date: 16/09/16
- * Time: 16:32
- */
 
 namespace Tsukasa\Orm;
 

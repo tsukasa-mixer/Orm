@@ -11,38 +11,35 @@ use ReflectionClass;
  */
 class Model extends AbstractModel
 {
-//    use LegacyMethodsTrait;
-
-    private $cache_time = 0;
+    protected $cache_time = 0;
 
     /**
      * @return string
+     * @throws \ReflectionException
      */
     public static function tableName()
     {
         $bundleName = self::getBundleName();
         if (!empty($bundleName)) {
-            return sprintf("%s_%s",
+            return sprintf('%s_%s',
                 self::normalizeTableName(str_replace('Bundle', '', $bundleName)),
                 parent::tableName()
             );
-        } else {
-            return parent::tableName();
         }
+
+        return parent::tableName();
     }
 
     /**
      * Return module name
      * @return string
+     * @throws \ReflectionException
      */
     public static function getBundleName()
     {
-        $delim = '/';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $delim = '\\';
-        }
+        $delim = DIRECTORY_SEPARATOR;
 
-        $object = new ReflectionClass(get_called_class());
+        $object = new ReflectionClass(static::class);
 
         // For classical modules
         if ($pos = strpos($object->getFileName(), 'Modules')) {
@@ -61,7 +58,7 @@ class Model extends AbstractModel
 
     public function getObjects($instance = null)
     {
-        return static::objects(($instance) ? $instance : $this);
+        return static::objects($instance ?: $this);
     }
 
     /**
@@ -69,19 +66,22 @@ class Model extends AbstractModel
      */
     public function __toString()
     {
-        return (string)$this->getShortName();
+        return (string)self::classNameShort();
     }
 
-    public function getCache() {
+    public function getCache()
+    {
         return $this->cache_time;
     }
 
-    public function cache($life_time = 30) {
+    public function cache($life_time = 30)
+    {
         $this->cache_time = $life_time;
         return $this;
     }
 
-    public function noCache() {
+    public function noCache()
+    {
         $this->cache_time = 0;
         return $this;
     }

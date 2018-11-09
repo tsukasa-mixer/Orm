@@ -54,10 +54,9 @@ class AttributeCollection
      */
     public function getAttribute($name)
     {
-//        if (isset($this->mapping[$name])) {
-//            $name = $this->mapping[$name];
-//        }
-        return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
+        return isset($this->attributes[$name])
+            ? $this->attributes[$name]
+            : null;
     }
 
     /**
@@ -66,10 +65,6 @@ class AttributeCollection
      */
     public function setAttribute($name, $value)
     {
-//        if (empty($this->oldAttributes[$name])) {
-//            $this->oldAttributes[$name] = $this->getAttribute($name);
-//        }
-
         $this->attributes[$name] = $value;
     }
 
@@ -92,7 +87,9 @@ class AttributeCollection
      */
     public function getOldAttribute($name)
     {
-        return isset($this->oldAttributes[$name]) ? $this->oldAttributes[$name] : null;
+        return isset($this->oldAttributes[$name])
+            ? $this->oldAttributes[$name]
+            : null;
     }
 
     /**
@@ -114,8 +111,13 @@ class AttributeCollection
     public function reflectOldAttributes()
     {
         $this->resetOldAttributes();
+
         foreach ($this->getAttributes() as $name => $value) {
-            $this->oldAttributes[$name] = $value;
+            if (is_object($value)) {
+                $this->oldAttributes[$name] = clone $value;
+            } else {
+                $this->oldAttributes[$name] = $value;
+            }
         }
     }
 

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 abstract class Field implements ModelFieldInterface
 {
-    use ValidationTrait, ClassNames;
+    use ValidationTrait;
 
     /**
      * @var string|null|false
@@ -226,6 +226,7 @@ abstract class Field implements ModelFieldInterface
 
     /**
      * @param $value
+     * @throws \Exception
      */
     public function setValue($value)
     {
@@ -246,7 +247,8 @@ abstract class Field implements ModelFieldInterface
         if ($this->getModel() && $value = $this->getModel()->getAttribute($this->getAttributeName())) {
             return $value;
         }
-        else if (empty($this->value)) {
+
+        if (empty($this->value)) {
             $this->value = $this->null === true ? null : $this->default;
         }
 
@@ -261,9 +263,8 @@ abstract class Field implements ModelFieldInterface
         if (!$this->getModel()->getIsNewRecord() && $value = $this->getModel()->getOldAttribute($this->getAttributeName())) {
             return $value;
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     public function cleanValue()
@@ -281,7 +282,7 @@ abstract class Field implements ModelFieldInterface
      */
     public function isRequired()
     {
-        return $this->null === false && is_null($this->default) === true || $this->required;
+        return (($this->null === false) && ($this->default === null)) || $this->required;
     }
 
     /**
@@ -370,10 +371,12 @@ abstract class Field implements ModelFieldInterface
     public function toText()
     {
         $value = $this->getValue();
+
         if (isset($this->choices[$value])) {
             $value = $this->choices[$value];
         }
-        return $value;
+
+        return (string)$value;
     }
 
     public function hasChoices()
@@ -395,14 +398,9 @@ abstract class Field implements ModelFieldInterface
         return $this->getSqlType()->convertToPHPValue($value, $platform);
     }
 
+
     /**
-     * Converts a value from its PHP representation to its database representation
-     * of this type.
-     *
-     * @param mixed                                     $value    The value to convert.
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform The currently used database platform.
-     *
-     * @return mixed The database representation of the value.
+     * @inheritdoc
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -453,31 +451,33 @@ abstract class Field implements ModelFieldInterface
         }
 
         if ($fieldClass === null) {
-            $fieldClass = $this->choices ? \Tsukasa\Form\Fields\DropDownField::className() : $this->formField;
+            $fieldClass = $this->choices
+                ? \Tsukasa\Form\Fields\DropDownField::class
+                : $this->formField;
         }
         elseif ($fieldClass === false) {
             return null;
         }
 
-//        $validators = [];
-//        if ($form->hasField($this->name)) {
-//            $field = $form->getField($this->name);
-//            $validators = $field->validators;
-//        }
+        $validators = [];
+        if ($form->hasField($this->name)) {
+            $field = $form->getField($this->name);
+            $validators = $field->validators;
+        }
 
-//        if (($this->null === false || $this->required) && $this->autoFetch === false && ($this instanceof BooleanField) === false) {
-//            $validator = new RequiredValidator;
-//            $validator->setName($this->name);
-//            $validator->setModel($this);
-//            $validators[] = $validator;
-//        }
-//
-//        if ($this->unique) {
-//            $validator = new UniqueValidator;
-//            $validator->setName($this->name);
-//            $validator->setModel($this);
-//            $validators[] = $validator;
-//        }
+        if (($this->null === false || $this->required) && $this->autoFetch === false && ($this instanceof BooleanField) === false) {
+            $validator = new RequiredValidator;
+            $validator->setName($this->name);
+            $validator->setModel($this);
+            $validators[] = $validator;
+        }
+
+        if ($this->unique) {
+            $validator = new UniqueValidator;
+            $validator->setName($this->name);
+            $validator->setModel($this);
+            $validators[] = $validator;
+        }
 
         return Creator::createObject(array_merge([
              'class' => $fieldClass,
@@ -489,7 +489,7 @@ abstract class Field implements ModelFieldInterface
              'hint' => $this->helpText,
              'validators' => array_merge($validators, $this->getValidationConstraints()),
 //             'validators' => array_merge($validators, []),
-             'value' => $this->default ? $this->default : null
+             'value' => $this->default ?: null
 
 //            'html' => [
 //                'multiple' => $this->value instanceof RelatedManager

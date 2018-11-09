@@ -1,8 +1,9 @@
 <?php
-namespace Tsukasa\Orm;
+namespace Tsukasa\TableMetaData\Orm;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Column;
-use Modules\Core\Helpers\Cache;
 use ReflectionMethod;
 
 use Tsukasa\Orm\Fields\BigIntField;
@@ -18,8 +19,13 @@ use Tsukasa\Orm\Fields\TimeField;
 
 class AutoMetaData extends MetaData
 {
+    const CACHE_KEY = 'auto_meta_data_configs';
+
     private static $_tables;
     private static $_configs;
+    /** @var Connection */
+    protected $connection;
+    protected $className;
 
     /**
      * @param string $className
@@ -28,11 +34,9 @@ class AutoMetaData extends MetaData
      */
     protected function init($className)
     {
-        $this->initTableData();
+        $this->className = $className;
 
-        if ((new ReflectionMethod($className, 'getFields'))->isStatic()
-//            || (new ReflectionMethod($className, 'getColumns'))->isStatic()
-        ) {
+        if ((new ReflectionMethod($className, 'getFields'))->isStatic()) {
             parent::init($className);
         }
 
@@ -66,19 +70,36 @@ class AutoMetaData extends MetaData
     }
 
     /**
+     * @return Connection
+     * @throws \ReflectionException
+     */
+    protected function getConnection()
+    {
+        if (!$this->connection) {
+            $this->connection = (new \ReflectionClass($this->className))
+                ->newInstance()
+                ->getConnection();
+        }
+
+        return $this->connection;
+    }
+
+    /**
      * @param string $className
      *
      * @return \Doctrine\DBAL\Schema\Column[]
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \ReflectionException
      */
-    private function getTableColumns($className): array
+    private function getTableColumns($className)
     {
         if (!isset(self::$_tables[$className]))
         {
-            self::$_tables[$className] = Xcart::app()->db
-                ->getConnection()
-                ->getSchemaManager()
-                ->listTableColumns(\call_user_func([$className, 'tableName']));
+            self::$_tables[$className] = $this
+                ->listTableColumns(
+                    \call_user_func([$className, 'tableName']),
+                    \call_user_func([$className, 'databaseName'])
+                );
+
         }
 
         return self::$_tables[$className];
@@ -88,9 +109,9 @@ class AutoMetaData extends MetaData
      * @param string $className
      *
      * @return array Config fields as $name => $config
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \ReflectionException
      */
-    private function getTableConfig($className): array
+    private function getTableConfig($className)
     {
         if (!isset(self::$_configs[$className]))
         {
@@ -183,28 +204,23 @@ class AutoMetaData extends MetaData
         return null;
     }
 
-    public function initTableData(): void
-    {
 
-        self::$_tables = [];
+    public function listTableColumns($table, $database = null) {
 
-        if (null === self::$_configs)
-        {
-            if (Xcart::app()->hasComponent('event') && Xcart::app()->hasComponent('cache'))
-            {
-                self::$_configs = Xcart::app()->cache->get('auto_meta_data_configs', []);
-                Xcart::app()->event->on('app:end', [$this, 'saveCache']);
-            }
-            else {
-                self::$_configs = [];
-            }
+        $connection = $this->getConnection();
+        $platform  = $connection->getDatabasePlatform();
+
+        if (!$database) {
+            $database = $connection->getDatabase();
         }
-    }
 
-    public static function saveCache($owner): void
-    {
-        if (!\defined('APP_DEBUG') && self::$_configs) {
-            Xcart::app()->cache->set('auto_meta_data_configs', self::$_configs, Cache::CACHE_HALF_DAY);
+        $qcp = null;
+        if ($connection->getConfiguration()->getResultCacheImpl()) {
+            $qcp = new QueryCacheProfile(3600*12);
         }
+
+        $sql = $platform->getListTableColumnsSQL($table, $database);
+
+        return $connection->executeQuery($sql, [], [], $qcp)->fetchAll();
     }
 }

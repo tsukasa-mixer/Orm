@@ -2,6 +2,7 @@
   "name": "tsukasa/orm",
   "type": "library",
   "license": "MIT",
+  "description": "Django like ORM",
   "authors": [
     {
       "name": "Falaleev Maxim",
@@ -12,17 +13,27 @@
       "email": "dog.mixer@gmaiol.com"
     }
   ],
+  "config": {
+    "platform": {
+      "php": "5.6"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/tsukasa-mixer/QueryBuilder"
+    }
+  ],
   "require": {
-    "doctrine/dbal": "^2.5"
+    "doctrine/dbal": "^2.5",
+    "mindy/query_builder": "dev-master_5.4",
+    "symfony/validator": "^3.4"
   },
   "require-dev": {
     "phpunit/phpunit": "*",
     "phpunit/php-code-coverage": "^4"
   },
   "autoload": {
-    "files": [
-      "src/Conditions.php"
-    ],
     "psr-4": {
       "Tsukasa\\Orm\\": "src/"
     }

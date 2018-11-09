@@ -48,7 +48,7 @@ class AbstractModel extends Base
             return true;
         }
 
-        $connection = static::getConnection();
+        $connection = $this->getConnection();
         $adapter = $this->getQueryBuilder()->getAdapter();
 
         $tableName = $adapter->quoteTableName($adapter->getRawTableName($this->tableName()));
@@ -56,7 +56,7 @@ class AbstractModel extends Base
         $fields = array_keys($values);
 
         foreach ($this->getPrimaryKeyName(true) as $field) {
-            if (!in_array($field, $fields)) {
+            if (!in_array($field, $fields, true)) {
                 $fields[]= $field;
             }
         }
@@ -82,7 +82,7 @@ class AbstractModel extends Base
             return true;
         }
 
-        $connection = static::getConnection();
+        $connection = $this->getConnection();
         $adapter = $this->getQueryBuilder()->getAdapter();
 
         $tableName = $adapter->quoteTableName($adapter->getRawTableName($this->tableName()));
@@ -94,10 +94,10 @@ class AbstractModel extends Base
 
         foreach (self::getMeta()->getPrimaryKeyName(true) as $primaryKeyName)
         {
-            if ($this->getField($primaryKeyName) instanceof AutoField) {
-                if (in_array($primaryKeyName, $dirty) === false) {
-                    $values[ $primaryKeyName ] = $connection->lastInsertId($this->getSequenceName());
-                }
+            if (($this->getField($primaryKeyName) instanceof AutoField) && !in_array($primaryKeyName, $dirty, true)) {
+                $values[ $primaryKeyName ] = $connection->lastInsertId(
+                    $this->getSequenceName()
+                );
             }
         }
 
@@ -176,8 +176,8 @@ class AbstractModel extends Base
             $schemaManager->listSequences();
 
             return implode('_', [
-                $this->tableName(),
-                $this->getPrimaryKeyName(),
+                static::tableName(),
+                static::getPrimaryKeyName(),
                 'seq'
             ]);
         } catch (DBALException $e) {
@@ -198,7 +198,7 @@ class AbstractModel extends Base
 
         $connection->beginTransaction();
         try {
-            if (($inserted = $this->insertInternal($fields))) {
+            if ($inserted = $this->insertInternal($fields)) {
                 $connection->commit();
             } else {
                 $connection->rollBack();
@@ -214,7 +214,7 @@ class AbstractModel extends Base
             $this->setIsCreated(true);
             $this->setIsNewRecord(false);
             $this->updateRelated();
-            $this->reflectOldAttributes();
+            $this->reflectToOldAttributes();
         }
 
         return $inserted;
@@ -247,7 +247,7 @@ class AbstractModel extends Base
 
         if ($updated) {
             $this->updateRelated();
-            $this->reflectOldAttributes();
+            $this->reflectToOldAttributes();
         }
         return $updated;
     }
@@ -292,7 +292,7 @@ class AbstractModel extends Base
         return $changed;
     }
 
-    protected function reflectOldAttributes()
+    protected function reflectToOldAttributes()
     {
         $this->attributes->reflectOldAttributes();
         $meta = static::getMeta();

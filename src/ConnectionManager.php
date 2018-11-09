@@ -4,6 +4,7 @@ namespace Tsukasa\Orm;
 use Doctrine\DBAL\DriverManager;
 use ReflectionClass;
 use Tsukasa\Helpers\SmartProperties;
+use Tsukasa\Orm\DefaultConnection;
 
 
 class ConnectionManager
@@ -28,7 +29,9 @@ class ConnectionManager
      */
     protected $eventManager = null;
 
-    protected $defaultWrapperClass = 'Tsukasa\Orm\DefaultConnection';
+    protected $defaultWrapperClass = DefaultConnection::class;
+
+    protected static $instance;
 
     /**
      * ConnectionManager constructor.
@@ -36,11 +39,26 @@ class ConnectionManager
      */
     public function __construct(array $config = [])
     {
+        static::$instance = $this;
         $this->configure($config);
     }
 
     /**
+     * @param array $config
+     * @return static
+     */
+    public static function getInstance(array $config = [])
+    {
+        if (!static::$instance) {
+            static::$instance = new static($config);
+        }
+
+        return static::$instance;
+    }
+
+    /**
      * @param array $connections
+     * @throws \ReflectionException
      */
     public function setConnections(array $connections)
     {
@@ -69,7 +87,7 @@ class ConnectionManager
                 $class = $params['class'];
                 unset($params['class']);
 
-                if (count($params) == 0) {
+                if (count($params) === 0) {
                     $adapter = new $class;
                 }
                 else {
@@ -117,7 +135,7 @@ class ConnectionManager
         }
 
         if (empty($this->connections[$name])) {
-            Xcart::app()->logger->warning('Unknown connection ' . $name);
+            trigger_error('Unknown connection ' . $name, E_WARNING);
         }
 
         return $this->connections[$name];
