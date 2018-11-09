@@ -4,7 +4,7 @@ namespace Tsukasa\Orm;
 
 use Doctrine\DBAL\Driver\Connection;
 
-use Xcart\Connection as XcartConnection;
+//use Xcart\Connection as XcartConnection;
 
 class Orm
 {
