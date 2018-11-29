@@ -170,6 +170,6 @@ class DefaultConnection extends DBALConnection
 
         $data = array_merge($data, ErrorHandler::getRequestErrData());
 
-        Xcart::app()->logger->critical($exception->getMessage(), $data, 'sql');
+//        Xcart::app()->logger->critical($exception->getMessage(), $data, 'sql');
     }
 }

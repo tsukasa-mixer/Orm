@@ -753,6 +753,14 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     }
 
     /**
+     * @return string|null
+     */
+    public static function databaseName()
+    {
+        return null;
+    }
+
+    /**
      * @param string $tableName
      * @return string
      */

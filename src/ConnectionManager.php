@@ -2,14 +2,13 @@
 namespace Tsukasa\Orm;
 
 use Doctrine\DBAL\DriverManager;
+use Orm\Helpers\Accessor;
 use ReflectionClass;
-use Tsukasa\Helpers\SmartProperties;
-use Tsukasa\Orm\DefaultConnection;
 
 
 class ConnectionManager
 {
-    use SmartProperties;
+    use Accessor;
 
     /**
      * @var string

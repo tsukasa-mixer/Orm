@@ -29,7 +29,6 @@ class AutoMetaData extends MetaData
 
     /**
      * @param string $className
-     * @throws \Doctrine\DBAL\DBALException
      * @throws \ReflectionException
      */
     protected function init($className)
@@ -77,7 +76,7 @@ class AutoMetaData extends MetaData
     {
         if (!$this->connection) {
             $this->connection = (new \ReflectionClass($this->className))
-                ->newInstance()
+                ->newInstanceWithoutConstructor()
                 ->getConnection();
         }
 
@@ -88,7 +87,6 @@ class AutoMetaData extends MetaData
      * @param string $className
      *
      * @return \Doctrine\DBAL\Schema\Column[]
-     * @throws \ReflectionException
      */
     private function getTableColumns($className)
     {
@@ -99,7 +97,6 @@ class AutoMetaData extends MetaData
                     \call_user_func([$className, 'tableName']),
                     \call_user_func([$className, 'databaseName'])
                 );
-
         }
 
         return self::$_tables[$className];
@@ -109,7 +106,6 @@ class AutoMetaData extends MetaData
      * @param string $className
      *
      * @return array Config fields as $name => $config
-     * @throws \ReflectionException
      */
     private function getTableConfig($className)
     {
@@ -118,10 +114,8 @@ class AutoMetaData extends MetaData
             foreach ($this->getTableColumns($className) as $column) {
                 $name = $column->getName();
 
-                if (!isset($this->fields[$name])) {
-                    if ($config = $this->getConfigFromDBAL($column)) {
-                        self::$_configs[$className][$name] = $config;
-                    }
+                if (!isset($this->fields[$name]) && $config = $this->getConfigFromDBAL($column)) {
+                    self::$_configs[$className][$name] = $config;
                 }
             }
         }
@@ -207,6 +201,11 @@ class AutoMetaData extends MetaData
 
     public function listTableColumns($table, $database = null) {
 
+        return $this->getConnection()
+            ->getSchemaManager()
+            ->listTableColumns($table, $database);
+
+        //@TODO: fix me
         $connection = $this->getConnection();
         $platform  = $connection->getDatabasePlatform();
 
