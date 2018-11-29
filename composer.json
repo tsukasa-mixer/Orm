@@ -6,11 +6,18 @@
   "authors": [
     {
       "name": "Falaleev Maxim",
-      "email": "max@studio107.ru"
+      "email": "max@studio107.ru",
+      "role": "Developer"
+    },
+    {
+      "name": "Okulov Anton",
+      "email": "qantus@mail.ru",
+      "role": "Developer"
     },
     {
       "name": "Korobitsyn Maksim",
-      "email": "dog.mixer@gmaiol.com"
+      "email": "dog.mixer@gmaiol.com",
+      "role": "Developer"
     }
   ],
   "config": {
@@ -18,15 +25,9 @@
       "php": "5.6"
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/tsukasa-mixer/QueryBuilder"
-    }
-  ],
   "require": {
     "doctrine/dbal": "^2.5",
-    "mindy/query_builder": "dev-master_5.4",
+    "tsukasa/query_builder": "dev-master_5.4",
     "symfony/validator": "^3.4"
   },
   "require-dev": {
