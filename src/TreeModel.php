@@ -3,6 +3,7 @@
 namespace Tsukasa\Orm;
 
 use Exception;
+use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Fields\TreeForeignField;
 use Tsukasa\Orm\Fields\ForeignField;
 use Tsukasa\Orm\Fields\IntField;
@@ -354,15 +355,15 @@ abstract class TreeModel extends Model
     public function moveAsRoot()
     {
         if ($this->getIsNewRecord()) {
-            throw new Exception('The node should not be new record.');
+            throw new OrmExceptions('The node should not be new record.');
         }
 
         if ($this->getIsDeletedRecord()) {
-            throw new Exception('The node should not be deleted.');
+            throw new OrmExceptions('The node should not be deleted.');
         }
 
         if ($this->isRoot()) {
-            throw new Exception('The node already is root node.');
+            throw new OrmExceptions('The node already is root node.');
         }
 
         $left = $this->lft;
@@ -469,23 +470,23 @@ abstract class TreeModel extends Model
     private function addNode(TreeModel $target, $rgt, $levelUp)
     {
         if (!$this->getIsNewRecord()) {
-            throw new Exception("The node can't be inserted because it is not new.");
+            throw new OrmExceptions("The node can't be inserted because it is not new.");
         }
 
         if ($this->getIsDeletedRecord()) {
-            throw new Exception("The node can't be inserted because it is deleted.");
+            throw new OrmExceptions("The node can't be inserted because it is deleted.");
         }
 
         if ($target->getIsDeletedRecord()) {
-            throw new Exception("The node can't be inserted because target node is deleted.");
+            throw new OrmExceptions("The node can't be inserted because target node is deleted.");
         }
 
         if ($this->pk == $target->pk) {
-            throw new Exception('The target node should not be self.');
+            throw new OrmExceptions('The target node should not be self.');
         }
 
         if (!$levelUp && $target->isRoot()) {
-            throw new Exception('The target node should not be root.');
+            throw new OrmExceptions('The target node should not be root.');
         }
 
         $this->root = $target->root;
@@ -534,27 +535,27 @@ abstract class TreeModel extends Model
     private function moveNode(TreeModel $target, $key, $levelUp)
     {
         if ($this->getIsNewRecord()) {
-            throw new Exception('The node should not be new record.');
+            throw new OrmExceptions('The node should not be new record.');
         }
 
         if ($this->getIsDeletedRecord()) {
-            throw new Exception('The node should not be deleted.');
+            throw new OrmExceptions('The node should not be deleted.');
         }
 
         if ($target->getIsDeletedRecord()) {
-            throw new Exception('The target node should not be deleted.');
+            throw new OrmExceptions('The target node should not be deleted.');
         }
 
         if ($this->pk == $target->pk) {
-            throw new Exception('The target node should not be self.');
+            throw new OrmExceptions('The target node should not be self.');
         }
 
         if ($target->isDescendantOf($this)) {
-            throw new Exception('The target node should not be descendant.');
+            throw new OrmExceptions('The target node should not be descendant.');
         }
 
         if (!$levelUp && $target->isRoot()) {
-            throw new Exception('The target node should not be root.');
+            throw new OrmExceptions('The target node should not be root.');
         }
 
         $left = $this->lft;

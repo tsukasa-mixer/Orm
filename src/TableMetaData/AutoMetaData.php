@@ -1,5 +1,5 @@
 <?php
-namespace Tsukasa\TableMetaData\Orm;
+namespace Tsukasa\Orm\TableMetaData;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;

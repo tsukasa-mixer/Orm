@@ -117,9 +117,8 @@ class ForeignField extends RelatedField
             if ($this->null === true) {
                 return null;
             }
-            else {
-                throw new Exception("Value in fetch method of PrimaryKeyField cannot be empty");
-            }
+
+            throw new OrmExceptions("Value in fetch method of PrimaryKeyField cannot be empty");
         }
 
         return $this->fetchModel($value);

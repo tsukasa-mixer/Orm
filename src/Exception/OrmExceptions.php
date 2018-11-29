@@ -1,7 +1,7 @@
 <?php
 namespace Tsukasa\Orm\Exception;
 
-class OrmExceptions extends \Exception
+class OrmExceptions extends \RuntimeException
 {
 
     public static function FailCreateLink()

@@ -5,8 +5,9 @@ namespace Tsukasa\Orm\Fields;
 use Exception;
 use Mindy\QueryBuilder\Expression;
 use RuntimeException;
+use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Manager;
-use Tsukasa\Orm\MetaData;
+use Tsukasa\Orm\TableMetaData\MetaData;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
 use Tsukasa\Orm\AbstractModel;
@@ -103,11 +104,12 @@ class ManyToManyField extends RelatedField
 
     /**
      * @return string Related model column in "link" table
+     * @throws \ReflectionException
      */
     public function getRelatedModelColumn()
     {
         if (empty($this->_modelColumn)) {
-            if (!empty($this->through)) {
+            if ($this->through !== null) {
                 if (empty($this->link)) {
                     $throughClass = $this->through;
                     $through = call_user_func([$throughClass, 'create']);
@@ -125,10 +127,10 @@ class ManyToManyField extends RelatedField
                     }
                 } else {
                     if ($this->link) {
-                        throw new Exception('throughLink is missing in configutaion');
+                        throw new OrmExceptions('throughLink is missing in configutaion');
                     }
 
-                    [$fromId, $toId] = $this->link;
+                    list($fromId, $toId) = $this->link;
 
                     $this->_relatedModelColumn = $this->reversed ? $toId : $fromId;
                 }
@@ -148,6 +150,7 @@ class ManyToManyField extends RelatedField
 
     /**
      * @return string PK name of model
+     * @throws \ReflectionException
      */
     public function getModelPk()
     {
@@ -182,10 +185,10 @@ class ManyToManyField extends RelatedField
                     }
                 } else {
                     if ($this->link) {
-                        throw new Exception('throughLink is missing in configutaion');
+                        throw new OrmExceptions('throughLink is missing in configutaion');
                     }
 
-                    [$fromId, $toId] = $this->link;
+                    list($fromId, $toId) = $this->link;
 
                     $this->_modelColumn = $this->reversed ? $toId : $fromId;
                 }
@@ -281,7 +284,7 @@ class ManyToManyField extends RelatedField
                         $throughAlias = $adapter->quoteColumn($throughAlias);
                         $from = $adapter->quoteColumn($from);
 
-                        if (\is_null($this->getModel()->{$to})) {
+                        if ($this->getModel()->{$to} === null) {
                             $manager->filter("{$throughAlias}.{$from} IS NULL");
                         }
                         else {
@@ -306,8 +309,7 @@ class ManyToManyField extends RelatedField
     {
         $this->_build_through = true;
         $joinAlias = '???';
-        foreach ($this->getSelectThroughJoin($qb, $topAlias) as $join) {
-            list($joinType, $tableName, $on, $alias) = $join;
+        foreach ($this->getSelectThroughJoin($qb, $topAlias) as list($joinType, $tableName, $on, $alias)) {
             $qb->join($joinType, $tableName, $on, $alias);
             $joinAlias = $alias;
         }
@@ -329,9 +331,8 @@ class ManyToManyField extends RelatedField
             sort($parts);
             return '{{%' . implode('_', $parts) . '}}';
         }
-        else {
-            return call_user_func([$this->through, 'tableName']);
-        }
+
+        return call_user_func([$this->through, 'tableName']);
     }
 
     /**
@@ -382,17 +383,15 @@ class ManyToManyField extends RelatedField
             ) {
                 return $value;
             }
-            else {
-                if (empty($value[0])) {
-                    return [];
-                }
 
-                throw new RuntimeException("{$this->getName()}: ManyToMany field can set only arrays of Models or existing primary keys");
+            if (empty($value[0])) {
+                return [];
             }
+
+            throw new RuntimeException("{$this->getName()}: ManyToMany field can set only arrays of Models or existing primary keys");
         }
-        else {
-            return [];
-        }
+
+        return [];
     }
 
     /**
@@ -419,7 +418,7 @@ class ManyToManyField extends RelatedField
             if ($linkModel instanceof ModelInterface) {
                 $manager->link($linkModel);
             } else {
-                throw new Exception("ManyToMany field can set only arrays of Models or existing primary keys");
+                throw new OrmExceptions("ManyToMany field can set only arrays of Models or existing primary keys");
             }
         }
     }

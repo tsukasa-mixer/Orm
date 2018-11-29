@@ -1,6 +1,6 @@
 <?php
 
-namespace Tsukasa\TableMetaData\Orm;
+namespace Tsukasa\Orm\TableMetaData;
 
 trait AutoMetaTrait
 {

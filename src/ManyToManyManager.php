@@ -10,6 +10,7 @@ namespace Tsukasa\Orm;
 
 use Exception;
 use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\Orm\Exception\OrmExceptions;
 
 /**
  * Class ManyToManyManager
@@ -78,7 +79,7 @@ abstract class ManyToManyManager extends ManagerBase
     public function clean()
     {
         if ($this->primaryModel->pk === null) {
-            throw new Exception('Unable to clean models: the primary key of ' . get_class($this->primaryModel) . ' is null.');
+            throw new OrmExceptions('Unable to clean models: the primary key of ' . get_class($this->primaryModel) . ' is null.');
         }
         $db = $this->primaryModel->getConnection();
         $adapter = QueryBuilder::getInstance($db)->getAdapter();
@@ -96,7 +97,7 @@ abstract class ManyToManyManager extends ManagerBase
     {
         $primaryModel = $this->getPrimaryModel();
         if ($primaryModel && empty($primaryModel->pk)) {
-            throw new Exception('Unable to ' . ($link ? 'link' : 'unlink') . ' models: the primary key of ' . get_class($primaryModel) . ' is ' . $primaryModel->pk . '.');
+            throw new OrmExceptions('Unable to ' . ($link ? 'link' : 'unlink') . ' models: the primary key of ' . get_class($primaryModel) . ' is ' . $primaryModel->pk . '.');
         }
 
         if ($this->through && $link)

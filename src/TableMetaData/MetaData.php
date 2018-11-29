@@ -1,6 +1,6 @@
 <?php
 
-namespace Tsukasa\TableMetaData\Orm;
+namespace Tsukasa\Orm\TableMetaData;
 
 use Tsukasa\Orm\Fields\AutoField;
 use Tsukasa\Orm\Fields\Field;
@@ -305,10 +305,11 @@ class MetaData
      */
     public function hasField($name)
     {
-        if ($name === 'pk') {
+        if (strtolower($name) === 'pk') {
             $name = $this->getPrimaryKeyName();
         }
-        return array_key_exists($name, $this->fields) || array_key_exists($name, $this->mapping);
+        return array_key_exists($name, $this->fields)
+            || array_key_exists($name, $this->mapping);
     }
 
     /**

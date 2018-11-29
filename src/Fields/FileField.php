@@ -9,6 +9,7 @@ use League\Flysystem\File as FlyFile;
 use League\Flysystem\FilesystemInterface;
 use Tsukasa\Form\PrepareData;
 
+use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Storage\Adapters\AdapterExtInterface;
 use Tsukasa\Storage\FileNameHasher\FileNameHasherInterface;
 use Tsukasa\Storage\FileNameHasher\MD5NameHasher;
@@ -311,7 +312,7 @@ class FileField extends CharField
             $file->getClientOriginalName()
         );
         if (!$this->getFilesystem()->write($path, $contents)) {
-            throw new Exception('Failed to save file');
+            throw new OrmExceptions('Failed to save file');
         }
         elseif ($this->getOldValue()) {
             $this->deleteOld();
@@ -338,7 +339,7 @@ class FileField extends CharField
         );
 
         if (!$this->getFilesystem()->write($path, $contents)) {
-            throw new Exception('Failed to save file');
+            throw new OrmExceptions('Failed to save file');
         }
 
         return $path;

@@ -8,7 +8,7 @@ use Exception;
  * Class MultipleObjectsReturned
  * @package Tsukasa\Orm
  */
-class MultipleObjectsReturned extends Exception
+class MultipleObjectsReturned extends OrmExceptions
 {
     public function __construct($message = "", $code = 0, Exception $previous = null)
     {

@@ -315,7 +315,7 @@ class ImageField extends FileField
         }
 
         if ($newPrefix === null && $throw) {
-            throw new Exception("Prefix with width $width and height $height not found");
+            throw new OrmExceptions("Prefix with width $width and height $height not found");
         }
 
         return $newPrefix;

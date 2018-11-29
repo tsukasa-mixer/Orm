@@ -8,13 +8,14 @@ use ArrayAccess;
 use Serializable;
 
 
+use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Fields\AutoField;
 use Tsukasa\Orm\Fields\Field;
 use Tsukasa\Orm\Fields\FileField;
 use Tsukasa\Orm\Fields\HasManyField;
 use Tsukasa\Orm\Fields\ManyToManyField;
 use Tsukasa\Orm\Fields\ModelFieldInterface;
-use Tsukasa\TableMetaData\Orm\MetaData;
+use Tsukasa\Orm\TableMetaData\MetaData;
 
 /**
  * Class NewBase
@@ -71,8 +72,8 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function convertToPrimaryKeyName($name)
     {
-        return $name == 'pk'
-            ? $this->getPrimaryKeyName()
+        return strtolower($name) === 'pk'
+            ? static::getPrimaryKeyName()
             : $name;
     }
 
@@ -84,8 +85,8 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function __set($name, $value)
     {
-
         $name = $this->convertToPrimaryKeyName($name);
+
         if ($this->hasField($name)) {
             if ($this->getField($name) instanceof ManyToManyField) {
                 $this->related[$name] = $value;
@@ -109,11 +110,12 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * This method overrides the parent implementation by checking if the named attribute is null or not.
      * @param string $name the property name or the event name
      * @return boolean whether the property value is null
+     * @throws \ReflectionException
      */
     public function __isset($name)
     {
         $name = $this->convertToPrimaryKeyName($name);
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         return $meta->hasField($name);
     }
 
@@ -125,7 +127,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     public function __unset($name)
     {
         $name = $this->convertToPrimaryKeyName($name);
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         if ($meta->hasField($name)) {
             $this->setAttribute($meta->getField($name)->getAttributeName(), null);
         }
@@ -161,11 +163,12 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     /**
      * @param string $name
      * @return bool
+     * @throws \ReflectionException
      */
     public function hasField($name)
     {
         $name = $this->convertToPrimaryKeyName($name);
-        return self::getMeta()->hasField($name);
+        return static::getMeta()->hasField($name);
     }
 
     /**
@@ -186,15 +189,15 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     {
         $name = $this->convertToPrimaryKeyName($name);
 
-        if (self::getMeta()->hasField($name)) {
-            $field = self::getMeta()->getField($name);
+        if (static::getMeta()->hasField($name)) {
+            $field = static::getMeta()->getField($name);
             $field->setModel($this);
 
             return $field;
         }
 
         if ($throw) {
-            throw new \RuntimeException('Unknown field');
+            throw new OrmExceptions("Unknown field '{$name}'");
         }
 
         return null;
@@ -253,23 +256,12 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
                 $this->related[$name] = $value;
             }
         }
-        else {
-            $this->attributesNotField[$name] = $value;
+//        else {
+//            $this->attributesNotField[$name] = $value;
 //            throw new Exception(get_class($this) . ' has no attribute named "' . $name . '".');
-        }
+//        }
 
         return $this;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return null
-     * @deprecated
-     */
-    public function getNotModelAttribute($name)
-    {
-        return $this->getFromQueryAttribute($name);
     }
 
     public function getFromQueryAttribute($name)
@@ -305,11 +297,12 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     /**
      * @return array
+     * @throws \ReflectionException
      */
     public function getAttributes()
     {
         $attributes = [];
-        foreach (self::getMeta()->getAttributes() as $name) {
+        foreach (static::getMeta()->getAttributes() as $name) {
             $attributes[$name] = $this->attributes->getAttribute($name);
         }
         return $attributes;
@@ -329,7 +322,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function hasAttribute($name)
     {
-        return \in_array($name, self::getMeta()->getAttributes(), true);
+        return \in_array($name, static::getMeta()->getAttributes(), true);
     }
 
     /**
@@ -348,11 +341,10 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      * Returns the bundle's container extension class.
      *
      * @return string
-     * @throws \ReflectionException
      */
     protected static function getManagerClass()
     {
-        return self::getNamespace() . '\\' . self::classNameShort(). 'Manager';
+        return static::getNamespace() . '\\' . static::classNameShort(). 'Manager';
     }
 
     /**
@@ -403,7 +395,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
         }
 
-        throw new \RuntimeException('Call unknown method ' . $method);
+        throw new OrmExceptions('Call unknown method ' . $method);
     }
 
     /**
@@ -448,7 +440,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
         }
 
-        throw new \RuntimeException("Call unknown method {$method}");
+        throw new OrmExceptions("Call unknown method {$method}");
     }
 
     /**
@@ -466,7 +458,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     public function isValid()
     {
         $errors = [];
-        $meta = self::getMeta();
+        $meta = static::getMeta();
 
         /* @var $field \Tsukasa\Orm\Fields\Field */
         foreach ($meta->getAttributes() as $name) {
@@ -541,7 +533,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function beforeInsertInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->beforeInsert($this, $this->getAttribute($field->getAttributeName()));
@@ -552,7 +544,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function afterInsertInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->afterInsert($this, $this->getAttribute($field->getAttributeName()));
@@ -564,7 +556,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function beforeUpdateInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->beforeUpdate($this, $this->getAttribute($field->getAttributeName()));
@@ -575,7 +567,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function afterUpdateInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->afterUpdate($this, $this->getAttribute($field->getAttributeName()));
@@ -599,7 +591,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function beforeDeleteInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->beforeDelete($this, $this->getAttribute($field->getAttributeName()));
@@ -609,7 +601,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
     protected function afterDeleteInternal()
     {
-        $meta = self::getMeta();
+        $meta = static::getMeta();
         foreach ($meta->getAttributes() as $name) {
             $field = $this->getField($name);
             $field->afterDelete($this, $this->getAttribute($field->getAttributeName()));
@@ -701,7 +693,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public static function getPrimaryKeyName($asArray = false)
     {
-        return self::getMeta()->getPrimaryKeyName($asArray);
+        return static::getMeta()->getPrimaryKeyName($asArray);
     }
 
     /**
@@ -737,9 +729,8 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public static function classNameShort()
     {
-        $name = explode('\\', static::class);
-        end($name);
-        return current($name);
+        $class = static::class;
+        return substr($class, strrpos($class, '\\', 0));
     }
 
     /**
@@ -862,7 +853,9 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     public function serialize()
     {
-        return serialize(['attributes' => $this->getAttributes(), 'attributesNotField' => $this->attributesNotField]);
+        return serialize([
+            'attributes' => $this->getAttributes()
+        ]);
     }
 
     /**
@@ -881,7 +874,5 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
 
         $this->attributes = new AttributeCollection;
         $this->setAttributes($us['attributes']);
-
-        $this->attributesNotField = $us['attributesNotField'];
     }
 }

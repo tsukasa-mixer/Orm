@@ -8,7 +8,7 @@ use Exception;
  * Class ObjectDoesNotExist
  * @package Tsukasa\Orm
  */
-class ObjectDoesNotExist extends Exception
+class ObjectDoesNotExist extends OrmExceptions
 {
     public function __construct($message = "", $code = 0, Exception $previous = null)
     {
