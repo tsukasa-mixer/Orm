@@ -7,7 +7,7 @@ use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Fields\TreeForeignField;
 use Tsukasa\Orm\Fields\ForeignField;
 use Tsukasa\Orm\Fields\IntField;
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 
 /**
  * Class TreeModel.

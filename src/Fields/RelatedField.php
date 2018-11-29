@@ -4,7 +4,7 @@ namespace Tsukasa\Orm\Fields;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Manager;
 
 /**

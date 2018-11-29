@@ -10,7 +10,7 @@ use IteratorAggregate;
 use Tsukasa\Orm\Callback\FetchColumnCallback;
 use Tsukasa\Orm\Callback\JoinCallback;
 use Tsukasa\Orm\Callback\LookupCallback;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Serializable;
 
 /**
@@ -37,7 +37,7 @@ abstract class QuerySetBase implements Countable, IteratorAggregate, ArrayAccess
      */
     private $_iterator;
     /**
-     * @var \Mindy\QueryBuilder\QueryBuilder
+     * @var \Tsukasa\QueryBuilder\QueryBuilder
      */
     protected $queryBuilder;
     /**
@@ -72,7 +72,7 @@ abstract class QuerySetBase implements Countable, IteratorAggregate, ArrayAccess
     }
 
     /**
-     * @return \Mindy\QueryBuilder\BaseAdapter|\Mindy\QueryBuilder\Interfaces\ISQLGenerator
+     * @return \Tsukasa\QueryBuilder\BaseAdapter|\Tsukasa\QueryBuilder\Interfaces\ISQLGenerator
      * @throws Exception
      */
     protected function getAdapter()
@@ -131,7 +131,7 @@ abstract class QuerySetBase implements Countable, IteratorAggregate, ArrayAccess
     }
 
     /**
-     * @return \Mindy\QueryBuilder\QueryBuilder
+     * @return \Tsukasa\QueryBuilder\QueryBuilder
      */
     public function getQueryBuilder()
     {

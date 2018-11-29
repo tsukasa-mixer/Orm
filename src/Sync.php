@@ -5,7 +5,7 @@ namespace Tsukasa\Orm;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Table;
 use Tsukasa\Orm\Fields\ManyToManyField;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 
 /**
  * Class Sync

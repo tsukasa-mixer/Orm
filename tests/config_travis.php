@@ -11,7 +11,7 @@ return [
     'sqlite' => [
         'memory' => true,
         'driver' => 'pdo_sqlite',
-        'driverClass' => 'Mindy\QueryBuilder\Driver\SqliteDriver',
+        'driverClass' => 'Tsukasa\QueryBuilder\Driver\SqliteDriver',
     ],
     'pgsql' => [
         'dbname' => 'test',

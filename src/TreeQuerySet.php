@@ -2,9 +2,9 @@
 
 namespace Tsukasa\Orm;
 
-use Mindy\QueryBuilder\Expression;
-use Mindy\QueryBuilder\Q\QAndNot;
-use Mindy\QueryBuilder\Q\QOr;
+use Tsukasa\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Q\QAndNot;
+use Tsukasa\QueryBuilder\Q\QOr;
 
 
 /**

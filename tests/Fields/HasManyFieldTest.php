@@ -14,7 +14,7 @@
 
 namespace Tsukasa\Orm\Tests\Fields;
 
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Tests\OrmDatabaseTestCase;
 use Tsukasa\Orm\Tests\Models\Category;
 use Tsukasa\Orm\Tests\Models\Color;

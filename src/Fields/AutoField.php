@@ -4,7 +4,7 @@ namespace Tsukasa\Orm\Fields;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 
 /**
  * Class AutoField

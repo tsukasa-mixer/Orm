@@ -5,7 +5,7 @@ namespace Tsukasa\Orm\Fields;
 use Exception;
 use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Manager;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 
 /**
  * Class HasManyField

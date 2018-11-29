@@ -2,7 +2,7 @@
 
 namespace Tsukasa\Orm\SlugFields;
 
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 use Tsukasa\Orm\ModelInterface;
 
 /**

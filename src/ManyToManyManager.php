@@ -9,7 +9,7 @@
 namespace Tsukasa\Orm;
 
 use Exception;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Exception\OrmExceptions;
 
 /**

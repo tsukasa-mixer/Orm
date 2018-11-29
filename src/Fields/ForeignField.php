@@ -9,7 +9,7 @@ use Tsukasa\Orm\Base;
 use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\ModelInterface;
 use Tsukasa\Orm\ManagerInterface;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 
 /**
  * Class ForeignField

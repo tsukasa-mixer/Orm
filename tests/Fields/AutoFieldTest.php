@@ -9,7 +9,7 @@
 namespace Tsukasa\Orm\Fields;
 
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 
 class AutoFieldTest extends \PHPUnit_Framework_TestCase
 {

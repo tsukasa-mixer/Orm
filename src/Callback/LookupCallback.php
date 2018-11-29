@@ -6,8 +6,8 @@ use Tsukasa\Orm\Fields\ManyToManyField;
 use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
-use Mindy\QueryBuilder\LookupBuilder\LookupBuilder;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\LookupBuilder\LookupBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 
 class LookupCallback
 {

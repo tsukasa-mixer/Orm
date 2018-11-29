@@ -3,18 +3,18 @@
 namespace Tsukasa\Orm;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Mindy\QueryBuilder\Expression;
-use Mindy\QueryBuilder\Q\QAnd;
+use Tsukasa\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Q\QAnd;
 use Tsukasa\Orm\Exception\MultipleObjectsReturned;
-use Mindy\QueryBuilder\Aggregation\Aggregation;
-use Mindy\QueryBuilder\Aggregation\Avg;
-use Mindy\QueryBuilder\Aggregation\Count;
-use Mindy\QueryBuilder\Aggregation\Max;
-use Mindy\QueryBuilder\Aggregation\Min;
-use Mindy\QueryBuilder\Aggregation\Sum;
-use Mindy\QueryBuilder\Q\QAndNot;
-use Mindy\QueryBuilder\Q\QOrNot;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\Aggregation\Aggregation;
+use Tsukasa\QueryBuilder\Aggregation\Avg;
+use Tsukasa\QueryBuilder\Aggregation\Count;
+use Tsukasa\QueryBuilder\Aggregation\Max;
+use Tsukasa\QueryBuilder\Aggregation\Min;
+use Tsukasa\QueryBuilder\Aggregation\Sum;
+use Tsukasa\QueryBuilder\Q\QAndNot;
+use Tsukasa\QueryBuilder\Q\QOrNot;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Fields\RelatedField;
 
 /**

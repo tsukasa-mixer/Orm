@@ -5,7 +5,7 @@ namespace Tsukasa\Orm\Fields;
 use DateTime;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\ModelInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 

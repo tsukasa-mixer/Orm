@@ -8,7 +8,7 @@
 
 namespace Tsukasa\Orm\Tests\Basic;
 
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Tests\OrmDatabaseTestCase;
 use Tsukasa\Orm\Tests\Models\Customer;
 use Tsukasa\Orm\Tests\Models\Solution;

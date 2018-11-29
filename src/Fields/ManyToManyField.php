@@ -3,7 +3,7 @@
 namespace Tsukasa\Orm\Fields;
 
 use Exception;
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 use RuntimeException;
 use Tsukasa\Orm\Exception\OrmExceptions;
 use Tsukasa\Orm\Manager;
@@ -11,7 +11,7 @@ use Tsukasa\Orm\TableMetaData\MetaData;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
 use Tsukasa\Orm\AbstractModel;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\ManagerInterface;
 
 /**

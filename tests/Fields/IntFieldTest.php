@@ -10,7 +10,7 @@ namespace Tsukasa\Orm\Fields;
 
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Mindy\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Expression;
 
 class IntFieldTest extends \PHPUnit_Framework_TestCase
 {

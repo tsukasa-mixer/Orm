@@ -6,7 +6,7 @@ use Doctrine\DBAL\Schema\Table;
 use Exception;
 use Tsukasa\Orm\Fields\AutoField;
 use Tsukasa\Orm\Fields\ManyToManyField;
-use Mindy\QueryBuilder\QueryBuilder;
+use Tsukasa\QueryBuilder\QueryBuilder;
 use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Fields\TimestampField;
 
@@ -26,7 +26,7 @@ class AbstractModel extends Base
     }
 
     /**
-     * @return \Mindy\QueryBuilder\BaseAdapter|\Mindy\QueryBuilder\Interfaces\ISQLGenerator
+     * @return \Tsukasa\QueryBuilder\BaseAdapter|\Tsukasa\QueryBuilder\Interfaces\ISQLGenerator
      * @throws \Exception
      */
     protected function getAdapter()

@@ -12,7 +12,7 @@ return [
         'memory' => true,
 //        'path' => __DIR__ . '/sqlite.db',
         'driver' => 'pdo_sqlite',
-        'driverClass' => 'Mindy\QueryBuilder\Driver\SqliteDriver',
+        'driverClass' => 'Tsukasa\QueryBuilder\Driver\SqliteDriver',
     ],
     'pgsql' => [
         'dbname' => 'test',

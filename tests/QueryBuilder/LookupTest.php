@@ -14,9 +14,9 @@
 
 namespace Tsukasa\Orm\Tests\QueryBuilder;
 
-use Mindy\QueryBuilder\Expression;
-use Mindy\QueryBuilder\Q\QAnd;
-use Mindy\QueryBuilder\Q\QOr;
+use Tsukasa\QueryBuilder\Expression;
+use Tsukasa\QueryBuilder\Q\QAnd;
+use Tsukasa\QueryBuilder\Q\QOr;
 use Tsukasa\Orm\Tests\OrmDatabaseTestCase;
 use Tsukasa\Orm\Tests\Models\Category;
 use Tsukasa\Orm\Tests\Models\Customer;
