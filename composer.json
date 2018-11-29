@@ -16,7 +16,7 @@
     },
     {
       "name": "Korobitsyn Maksim",
-      "email": "dog.mixer@gmaiol.com",
+      "email": "dog.mixer@gmail.com",
       "role": "Developer"
     }
   ],
@@ -27,7 +27,7 @@
   },
   "require": {
     "doctrine/dbal": "^2.5",
-    "tsukasa/query_builder": "dev-master_5.4",
+    "tsukasa/query_builder": "dev-master",
     "symfony/validator": "^3.4"
   },
   "require-dev": {
