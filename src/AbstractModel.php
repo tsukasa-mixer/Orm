@@ -11,7 +11,6 @@ use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Fields\TimestampField;
 
 /**
- * Class NewOrm
  * @package Tsukasa\Orm
  */
 class AbstractModel extends Base
