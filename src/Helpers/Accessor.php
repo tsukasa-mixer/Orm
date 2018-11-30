@@ -1,6 +1,6 @@
 <?php
 
-namespace Orm\Helpers;
+namespace Tsukasa\Orm\Helpers;
 
 trait Accessor
 {

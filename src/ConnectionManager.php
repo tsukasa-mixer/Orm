@@ -2,7 +2,7 @@
 namespace Tsukasa\Orm;
 
 use Doctrine\DBAL\DriverManager;
-use Orm\Helpers\Accessor;
+use Tsukasa\Orm\Helpers\Accessor;
 use ReflectionClass;
 
 
