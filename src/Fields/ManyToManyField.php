@@ -112,15 +112,15 @@ class ManyToManyField extends RelatedField
             if ($this->through !== null) {
                 if (empty($this->link)) {
                     $throughClass = $this->through;
-                    $through = call_user_func([$throughClass, 'create']);
+                    $through = \call_user_func([$throughClass, 'create']);
 
                     /**
                      * @var  Model $through
                      * @var  string $fieldName
                      * @var  mixed $params
                      */
-                    foreach ($through->getFields() as $fieldName => $params) {
-                        if (isset($params['modelClass']) && $params['modelClass'] == $this->modelClass) {
+                    foreach ($through::getFields() as $fieldName => $params) {
+                        if (isset($params['modelClass']) && $params['modelClass'] === $this->modelClass) {
                             $this->_relatedModelColumn = $through->getField($fieldName)->getAttributeName();
                             break;
                         }
@@ -167,10 +167,10 @@ class ManyToManyField extends RelatedField
     public function getModelColumn()
     {
         if (empty($this->_modelColumn)) {
-            if (!empty($this->through)) {
+            if ($this->through) {
                 if (empty($this->link)) {
                     $throughClass = $this->through;
-                    $through = call_user_func([$throughClass, 'create']);
+                    $through = \call_user_func([$throughClass, 'create']);
 
                     /**
                      * @var  Model $through
@@ -332,7 +332,7 @@ class ManyToManyField extends RelatedField
             return '{{%' . implode('_', $parts) . '}}';
         }
 
-        return call_user_func([$this->through, 'tableName']);
+        return \call_user_func([$this->through, 'tableName']);
     }
 
     /**

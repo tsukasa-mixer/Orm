@@ -16,6 +16,7 @@ use Tsukasa\Orm\Fields\FloatField;
 use Tsukasa\Orm\Fields\IntField;
 use Tsukasa\Orm\Fields\TextField;
 use Tsukasa\Orm\Fields\TimeField;
+use Tsukasa\QueryBuilder\QueryBuilder;
 
 class AutoMetaData extends MetaData
 {
@@ -92,11 +93,20 @@ class AutoMetaData extends MetaData
     {
         if (!isset(self::$_tables[$className]))
         {
-            self::$_tables[$className] = $this
-                ->listTableColumns(
-                    \call_user_func([$className, 'tableName']),
-                    \call_user_func([$className, 'databaseName'])
-                );
+
+            $adapter = QueryBuilder::getInstance($this->getConnection())->getAdapter();
+            $tableName = $adapter->getRawTableName(\call_user_func([$className, 'tableName']));
+            $dataBase = null;
+
+            if (strpos($tableName, '.') !== false) {
+                $_t = explode('.', $tableName);
+                if (count($_t) === 2) {
+                    $dataBase = $_t[0];
+                    $tableName = $_t[1];
+                }
+            }
+
+            self::$_tables[$className] = $this->listTableColumns( $tableName,  $dataBase );
         }
 
         return self::$_tables[$className];

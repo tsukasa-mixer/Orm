@@ -84,20 +84,18 @@ class ForeignField extends RelatedField
     public function getJoin(QueryBuilder $qb, $topAlias)
     {
         $on = [];
-        $alias = $qb->makeAliasKey($this->getRelatedModel()->tableName());
+        $alias = $qb->makeAliasKey(\call_user_func([$this->getRelatedModel(), 'tableName']));
 
         if ($this->link) {
             foreach ($this->link as $from => $to) {
                 $on[$topAlias . '.' . $from] = $alias . '.' . $to;
             }
         }
+        else if ($to = $this->getTo()) {
+            $on = [$topAlias . '.' . $this->getAttributeName() => $alias . '.' . $to];
+        }
         else {
-            if ($to = $this->getTo()) {
-                $on = [$topAlias . '.' . $this->getAttributeName() => $alias . '.' . $to];
-            }
-            else {
-                OrmExceptions::FailCreateLink();
-            }
+            OrmExceptions::FailCreateLink();
         }
 
         return [

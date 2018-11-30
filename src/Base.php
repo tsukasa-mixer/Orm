@@ -344,7 +344,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
      */
     protected static function getManagerClass()
     {
-        return static::getNamespace() . '\\' . static::classNameShort(). 'Manager';
+        return static::class . 'Manager';
     }
 
     /**
@@ -753,14 +753,6 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     }
 
     /**
-     * @return string|null
-     */
-    public static function databaseName()
-    {
-        return null;
-    }
-
-    /**
      * @param string $tableName
      * @return string
      */
@@ -772,6 +764,7 @@ abstract class Base implements ModelInterface, ArrayAccess, Serializable
     /**
      * @param mixed $offset
      * @return bool
+     * @throws \ReflectionException
      */
     public function offsetExists($offset)
     {
