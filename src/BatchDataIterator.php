@@ -4,8 +4,6 @@ namespace Tsukasa\Orm;
 
 use Doctrine\DBAL\Connection;
 use Iterator;
-use Tsukasa\Helper\Traits\Accessors;
-use Tsukasa\Helper\Traits\Configurator;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
@@ -123,7 +121,7 @@ class BatchDataIterator implements Iterator
      */
     public function next()
     {
-        if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
+        if ($this->_batch === null || !$this->each || ($this->each && next($this->_batch) === false)) {
             $this->_batch = $this->fetchData();
             reset($this->_batch);
         }
