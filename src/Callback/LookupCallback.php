@@ -6,10 +6,11 @@ use Tsukasa\Orm\Fields\ManyToManyField;
 use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
+use Tsukasa\QueryBuilder\Callbacks\AbstractCallback;
 use Tsukasa\QueryBuilder\LookupBuilder\LookupBuilder;
 use Tsukasa\QueryBuilder\QueryBuilder;
 
-class LookupCallback
+class LookupCallback extends AbstractCallback
 {
     /**
      * @var Model

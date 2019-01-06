@@ -4,8 +4,9 @@ namespace Tsukasa\Orm\Callback;
 
 use Tsukasa\Orm\TableMetaData\MetaData;
 use Tsukasa\Orm\ModelInterface;
+use Tsukasa\QueryBuilder\Callbacks\AbstractColumnCallback;
 
-class FetchColumnCallback
+class FetchColumnCallback extends AbstractColumnCallback
 {
     protected $model;
     protected $meta;
