@@ -122,7 +122,10 @@ abstract class Field implements ModelFieldInterface
 
         if (!empty($this->choices)) {
             $constraints[] = new Assert\Choice([
-                'choices' => array_keys($this->choices instanceof Closure ? $this->choices->__invoke() : $this->choices)
+                'choices' => array_keys($this->choices instanceof Closure
+                    ? $this->choices->__invoke()
+                    : $this->choices
+                )
             ]);
         }
 
@@ -304,9 +307,9 @@ abstract class Field implements ModelFieldInterface
     {
         if ($this->verboseName) {
             return $this->verboseName;
-        } else {
-            return str_replace('_', ' ', ucfirst($this->name));
         }
+
+        return str_replace('_', ' ', ucfirst($this->name));
     }
 
     /**
@@ -443,6 +446,8 @@ abstract class Field implements ModelFieldInterface
      * @param array $extra
      *
      * @return mixed|null
+     *
+     * @deprecated
      */
     public function getFormField($form, $fieldClass = null, array $extra = [])
     {
