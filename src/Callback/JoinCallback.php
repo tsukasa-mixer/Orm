@@ -7,7 +7,7 @@ use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
 use Tsukasa\QueryBuilder\Callbacks\AbstractJoinCallback;
-use Tsukasa\QueryBuilder\LookupBuilder\LookupBuilder;
+use Tsukasa\QueryBuilder\Interfaces\ILookupBuilder;
 use Tsukasa\QueryBuilder\QueryBuilder;
 
 class JoinCallback extends AbstractJoinCallback
@@ -24,7 +24,7 @@ class JoinCallback extends AbstractJoinCallback
         $this->model = $model;
     }
 
-    public function run(QueryBuilder $queryBuilder, LookupBuilder $lookupBuilder, array $lookupNodes)
+    public function run(QueryBuilder $queryBuilder, ILookupBuilder $lookupBuilder, array $lookupNodes)
     {
         $column = '';
         $alias = '';

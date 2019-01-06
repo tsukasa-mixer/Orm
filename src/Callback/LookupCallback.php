@@ -7,7 +7,7 @@ use Tsukasa\Orm\Fields\RelatedField;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
 use Tsukasa\QueryBuilder\Callbacks\AbstractCallback;
-use Tsukasa\QueryBuilder\LookupBuilder\LookupBuilder;
+use Tsukasa\QueryBuilder\Interfaces\ILookupBuilder;
 use Tsukasa\QueryBuilder\QueryBuilder;
 
 class LookupCallback extends AbstractCallback
@@ -27,7 +27,7 @@ class LookupCallback extends AbstractCallback
         $this->model = $model;
     }
 
-    public function run(QueryBuilder $queryBuilder, LookupBuilder $lookupBuilder, array $lookupNodes, $value)
+    public function run(QueryBuilder $queryBuilder, ILookupBuilder $lookupBuilder, array $lookupNodes, $value)
     {
         $lookup = $lookupBuilder->getDefault();
         $column = '';
