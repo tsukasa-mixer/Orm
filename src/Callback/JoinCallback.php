@@ -33,18 +33,16 @@ class JoinCallback extends AbstractJoinCallback
         foreach ($lookupNodes as $i => $nodeName) {
             if ($i + 1 == count($lookupNodes)) {
                 $column = $nodeName;
-            } else {
-                if ($nodeName == 'through' && $prevField && $prevField instanceof ManyToManyField) {
-                    $alias = $prevField->setConnection($this->model->getConnection())->buildThroughQuery($queryBuilder, $queryBuilder->getAlias());
-                }
-                else if ($this->model->hasField($nodeName)) {
-                    $field = $this->model->getField($nodeName);
+            } else if ($nodeName === 'through' && $prevField && $prevField instanceof ManyToManyField) {
+                $alias = $prevField->setConnection($this->model->getConnection())->buildThroughQuery($queryBuilder, $queryBuilder->getAlias());
+            }
+            else if ($this->model->hasField($nodeName)) {
+                $field = $this->model->getField($nodeName);
 
-                    if ($field instanceof RelatedField) {
-                        /** @var \Tsukasa\Orm\Fields\RelatedField $field */
-                        $alias = $field->setConnection($this->model->getConnection())->buildQuery($queryBuilder, $queryBuilder->getAlias());
-                        $prevField = $field;
-                    }
+                if ($field instanceof RelatedField) {
+                    /** @var \Tsukasa\Orm\Fields\RelatedField $field */
+                    $alias = $field->setConnection($this->model->getConnection())->buildQuery($queryBuilder, $queryBuilder->getAlias());
+                    $prevField = $field;
                 }
             }
         }

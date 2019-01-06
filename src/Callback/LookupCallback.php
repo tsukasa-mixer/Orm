@@ -46,7 +46,7 @@ class LookupCallback extends AbstractCallback
 
             if ($prevField)
             {
-                if ($node == 'through') {
+                if ($node === 'through') {
                     if ($prevField instanceof ManyToManyField) {
                         $joinAlias = $prevField
                             ->setConnection($connection)
@@ -68,7 +68,7 @@ class LookupCallback extends AbstractCallback
                 $prevField = $field;
             }
 
-            if (count($lookupNodes) == $i + 1) {
+            if (count($lookupNodes) === ($i + 1)) {
                 if ($lookupBuilder->hasLookup($node) === false) {
                     $column = $joinAlias . '.' . $lookupBuilder->fetchColumnName($node);
                     $columnWithLookup = $column . $lookupBuilder->getSeparator() . $lookupBuilder->getDefault();
