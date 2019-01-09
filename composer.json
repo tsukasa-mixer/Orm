@@ -27,7 +27,7 @@
   },
   "require": {
     "doctrine/dbal": "^2.5",
-    "tsukasa/query_builder": "dev-master",
+    "tsukasa/query_builder": "~0.1",
     "symfony/validator": "^3.4"
   },
   "require-dev": {

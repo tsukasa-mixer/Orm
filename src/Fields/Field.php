@@ -8,7 +8,6 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Types\Type;
 
-use Tsukasa\Helpers\Creator;
 use Tsukasa\Orm\Model;
 use Tsukasa\Orm\ModelInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -243,7 +242,7 @@ abstract class Field implements ModelFieldInterface
     }
 
     /**
-     * @return int|mixed|null|strin
+     * @return int|mixed|null|string
      */
     public function getValue()
     {
@@ -440,65 +439,65 @@ abstract class Field implements ModelFieldInterface
         return $this->getSqlType()->convertToDatabaseValueSQL($sqlExpr, $platform);
     }
 
-    /**
-     * @param \Tsukasa\Form\Form      $form
-     * @param null  $fieldClass
-     * @param array $extra
-     *
-     * @return mixed|null
-     *
-     * @deprecated
-     */
-    public function getFormField($form, $fieldClass = null, array $extra = [])
-    {
-        if ($this->primary || $this->editable === false) {
-            return null;
-        }
-
-        if ($fieldClass === null) {
-            $fieldClass = $this->choices
-                ? \Tsukasa\Form\Fields\DropDownField::class
-                : $this->formField;
-        }
-        elseif ($fieldClass === false) {
-            return null;
-        }
-
-        $validators = [];
-        if ($form->hasField($this->name)) {
-            $field = $form->getField($this->name);
-            $validators = $field->validators;
-        }
-
-        if (($this->null === false || $this->required) && $this->autoFetch === false && ($this instanceof BooleanField) === false) {
-            $validator = new RequiredValidator;
-            $validator->setName($this->name);
-            $validator->setModel($this);
-            $validators[] = $validator;
-        }
-
-        if ($this->unique) {
-            $validator = new UniqueValidator;
-            $validator->setName($this->name);
-            $validator->setModel($this);
-            $validators[] = $validator;
-        }
-
-        return Creator::createObject(array_merge([
-             'class' => $fieldClass,
-             'required' => $this->isRequired(),
-             'form' => $form,
-             'choices' => $this->choices,
-             'name' => $this->name,
-             'label' => $this->verboseName,
-             'hint' => $this->helpText,
-             'validators' => array_merge($validators, $this->getValidationConstraints()),
-//             'validators' => array_merge($validators, []),
-             'value' => $this->default ?: null
-
-//            'html' => [
-//                'multiple' => $this->value instanceof RelatedManager
-//            ]
-        ], $extra));
-    }
+//    /**
+//     * @param \Tsukasa\Form\Form      $form
+//     * @param null  $fieldClass
+//     * @param array $extra
+//     *
+//     * @return mixed|null
+//     *
+//     * @deprecated
+//     */
+//    public function getFormField($form, $fieldClass = null, array $extra = [])
+//    {
+//        if ($this->primary || $this->editable === false) {
+//            return null;
+//        }
+//
+//        if ($fieldClass === null) {
+//            $fieldClass = $this->choices
+//                ? \Tsukasa\Form\Fields\DropDownField::class
+//                : $this->formField;
+//        }
+//        elseif ($fieldClass === false) {
+//            return null;
+//        }
+//
+//        $validators = [];
+//        if ($form->hasField($this->name)) {
+//            $field = $form->getField($this->name);
+//            $validators = $field->validators;
+//        }
+//
+//        if (($this->null === false || $this->required) && $this->autoFetch === false && ($this instanceof BooleanField) === false) {
+//            $validator = new RequiredValidator;
+//            $validator->setName($this->name);
+//            $validator->setModel($this);
+//            $validators[] = $validator;
+//        }
+//
+//        if ($this->unique) {
+//            $validator = new UniqueValidator;
+//            $validator->setName($this->name);
+//            $validator->setModel($this);
+//            $validators[] = $validator;
+//        }
+//
+//        return Creator::createObject(array_merge([
+//             'class' => $fieldClass,
+//             'required' => $this->isRequired(),
+//             'form' => $form,
+//             'choices' => $this->choices,
+//             'name' => $this->name,
+//             'label' => $this->verboseName,
+//             'hint' => $this->helpText,
+//             'validators' => array_merge($validators, $this->getValidationConstraints()),
+////             'validators' => array_merge($validators, []),
+//             'value' => $this->default ?: null
+//
+////            'html' => [
+////                'multiple' => $this->value instanceof RelatedManager
+////            ]
+//        ], $extra));
+//    }
 }
